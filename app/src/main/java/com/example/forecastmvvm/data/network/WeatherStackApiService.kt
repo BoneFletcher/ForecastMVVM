@@ -1,4 +1,4 @@
-package com.example.forecastmvvm.data
+package com.example.forecastmvvm.data.network
 
 import com.example.forecastmvvm.data.network.response.CurrentWeatherResponse
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -15,12 +15,12 @@ const val API_KEY = "e2acd743a762c85f84e9407fe8adaca1"
 interface WeatherStackApiService {
 
     @GET("current?")
-    fun getCurrentWeather(
-        @Query("query") location: String
-    ): Deferred<CurrentWeatherResponse>
+    fun getCurrentWeather(@Query("query") location: String): Deferred<CurrentWeatherResponse>
 
     companion object {
-        operator fun invoke(): WeatherStackApiService {
+        operator fun invoke(
+            connectivityInterceptor: ConnectivityInterceptor
+        ): WeatherStackApiService {
             val requestInterceptor = Interceptor{chain ->
                 val url = chain.request()
                     .url()
@@ -36,6 +36,7 @@ interface WeatherStackApiService {
 
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(requestInterceptor)
+                .addInterceptor(connectivityInterceptor)
                 .build()
             return Retrofit.Builder()
                 .client(okHttpClient)

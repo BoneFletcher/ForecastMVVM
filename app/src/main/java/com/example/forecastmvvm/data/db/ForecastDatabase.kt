@@ -27,7 +27,6 @@ abstract class ForecastDatabase : RoomDatabase() {
 
         operator fun invoke(context: Context) = instance ?: synchronized(LOCK) {
             instance ?: buildDatabse(context).also { instance = it }
-
         }
 
         private fun buildDatabse(context: Context) =
